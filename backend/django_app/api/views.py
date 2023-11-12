@@ -58,7 +58,9 @@ class GameViewSet(viewsets.ModelViewSet):
 
         serializer = GameSerializer(game)
 
-        GameStats.objects.create(player=player, game=game, time_taken=timezone.timedelta(), moves_taken=0)
+        GameStats.objects.create(
+            player=player, game=game, time_taken=timezone.timedelta(), moves_taken=0, cards_quantity=cards_quantity
+        )  # Сохранение количества карточек в GameStats
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
@@ -93,11 +95,18 @@ class GameStatsViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def top_players(self, request):
+        cards_quantity = request.query_params.get('cards_quantity', None)
+    
+        if cards_quantity is None:
+            return Response({'error': 'Не указано количество карточек.'}, status=status.HTTP_400_BAD_REQUEST)
+
         top_players = (
-            GameStats.objects.values('player')
+            GameStats.objects.filter(cards_quantity=cards_quantity)
+            .values('player')
             .annotate(avg_time=Avg('time_taken'))
             .order_by('avg_time')
         )[:10]
+    
         top_players_data = [
             {
                 'player': player['player'],

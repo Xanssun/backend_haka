@@ -41,6 +41,7 @@ class GameStats(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     time_taken = models.DurationField()
     moves_taken = models.IntegerField()
+    cards_quantity = models.IntegerField()
 
     class Meta:
         verbose_name = "Статистика игры"

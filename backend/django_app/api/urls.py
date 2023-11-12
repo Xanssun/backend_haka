@@ -12,8 +12,5 @@ router_v1.register('gamestats', GameStatsViewSet, basename='gamestats')
 
 urlpatterns = [
     path('', include(router_v1.urls)),
+    path('gamestats/top_players/', GameStatsViewSet.as_view({'get': 'top_players'}), name='top_players'),
 ]
-
-
-# api/gamestats/top_players/?gameFieldSize=10?sort=move
-# api/gamestats/top_players/?gameFieldSize=10?sort=time
